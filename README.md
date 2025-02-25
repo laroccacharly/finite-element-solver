@@ -1,9 +1,20 @@
 # finite-element-solver
-A simple C++ on Qt app to solve partial differential equations in 2D
+
+A C++ on Qt app to solve partial differential equations in 2D. 
+
+# Install dependencies
+
+```bash
+brew install cmake qt5 cgal armadillo muparser superlu
+```
+
+# Build
+Run the build.sh script to build and run the app.
+```bash
+./build.sh
+```
 
 An example output plot of a solution : 
 ![Screenshot](plot.png)
 
-Please read doc.pdf for details on how to use the app. 
-
-Note: This is the first C++ project I did (from 2013). Don't expect too much. 
+Refer to the doc.pdf file for more detailed information about the application. 

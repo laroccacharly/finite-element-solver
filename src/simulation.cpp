@@ -8,7 +8,7 @@
 #include <QTextEdit>
 #include <QCheckBox>
 #include <QDialog>
-#include <armadillo>
+#include "arma_config.hpp"  // Custom Armadillo config to enable SuperLU
 #include <QVector>
 #include <algorithm>
 #include "Simulation.h"
@@ -441,12 +441,14 @@ void simul::eval() // All the simulation is in this function
 
 			// Parameters for interpolation functions
 
-			coeq << 1 << -3 << -3 << 4 << 2 << 2 << arma::endr
-				<< 0 << -1 << 0 << 0 << 2 << 0 << arma::endr
-				<< 0 << 0 << -1 << 0 << 0 << 2 << arma::endr
-				<< 0 << 4 << 0 << -4 << -4 << 0 << arma::endr
-				<< 0 << 0 << 0 << 4 << 0 << 0 << arma::endr
-				<< 0 << 0 << 4 << -4 << 0 << -4 << arma::endr;
+			coeq = {
+				{1, -3, -3, 4, 2, 2},
+				{0, -1, 0, 0, 2, 0},
+				{0, 0, -1, 0, 0, 2},
+				{0, 4, 0, -4, -4, 0},
+				{0, 0, 0, 4, 0, 0},
+				{0, 0, 4, -4, 0, -4}
+			};
 
 			// Replot the mesh with the new nodes
 			QVector<double> px(npointx.size()), py(npointx.size());
@@ -600,13 +602,13 @@ void simul::eval() // All the simulation is in this function
 
 		// A few parameters
 		arma::rowvec zd, nd, e, we, xi, yi, wi;
-		zd << -1 << 1 << 0 << arma::endr;
-		nd << -1 << 0 << 1 << arma::endr;
-		e << -0.774596669241483 << 0 << 0.774596669241483 << arma::endr;
-		we << 0.555555555555556 << 0.888888888888889 << 0.555555555555556 << arma::endr;
-		xi << 0.108103018168070 << 0.445948490915965 << 0.445948490915965 << 0.816847572980459 << 0.091576213509771 << 0.091576213509771 << arma::endr;
-		yi << 0.445948490915965 << 0.108103018168070 << 0.445948490915965 << 0.091576213509771 << 0.816847572980459 << 0.091576213509771 << arma::endr;
-		wi << 0.1116907948390055 << 0.1116907948390055 << 0.1116907948390055 << 0.0549758718276610 << 0.0549758718276610 << 0.0549758718276610 << arma::endr;
+		zd = {-1, 1, 0};
+		nd = {-1, 0, 1};
+		e = {-0.774596669241483, 0, 0.774596669241483};
+		we = {0.555555555555556, 0.888888888888889, 0.555555555555556};
+		xi = {0.108103018168070, 0.445948490915965, 0.445948490915965, 0.816847572980459, 0.091576213509771, 0.091576213509771};
+		yi = {0.445948490915965, 0.108103018168070, 0.445948490915965, 0.091576213509771, 0.816847572980459, 0.091576213509771};
+		wi = {0.1116907948390055, 0.1116907948390055, 0.1116907948390055, 0.0549758718276610, 0.0549758718276610, 0.0549758718276610};
 
 
 		// Interpolation functions and elementary matrix
@@ -629,9 +631,9 @@ void simul::eval() // All the simulation is in this function
 		arma::mat IntA(nC, nC), Fk(nC, nbel);
 		arma::cube Intz(nC, nC, nbel);
 		arma::colvec v1, v2, v3;
-		v1 << 0 << -1 << arma::endr;
-		v2 << -1 << 0 << arma::endr;
-		v3 << 1 << 1 << arma::endr;
+		v1 = {0, -1};
+		v2 = {-1, 0};
+		v3 = {1, 1};
 		int tokbar = 0;
 		arma::colvec Fi(wi.size()), Aij(wi.size());
 
@@ -750,7 +752,7 @@ void simul::eval() // All the simulation is in this function
 									chi = 0; eta = 1 - (e(l) + 1) / 2;
 								}
 								arma::rowvec tov1(6);
-								tov1 << 1 << chi << eta << chi*eta << chi*chi << eta*eta << arma::endr;
+								tov1 = {1, chi, eta, chi*eta, chi*chi, eta*eta};
 								for (int m = 0; m < nC; m++)
 								{
 									psi(m) = arma::sum(coeq.row(m) % tov1);
@@ -835,9 +837,9 @@ void simul::eval() // All the simulation is in this function
 							nd.resize(6);
 							zd.resize(6);
 							arma::rowvec tov1(6), tov2(6), tov3(6);
-							tov1 << 1 << chi << eta << chi*eta << chi*chi << eta*eta << arma::endr;
-							tov2 << 0 << 1 << 0 << eta << 2 * chi << 0 << arma::endr;
-							tov3 << 0 << 0 << 1 << chi << 0 << 2 * eta << arma::endr;
+							tov1 = {1, chi, eta, chi*eta, chi*chi, eta*eta};
+							tov2 = {0, 1, 0, eta, 2 * chi, 0};
+							tov3 = {0, 0, 1, chi, 0, 2 * eta};
 							for (int m = 0; m < nC; m++)
 							{
 								psi(m) = arma::sum(coeq.row(m) % tov1);
@@ -865,10 +867,9 @@ void simul::eval() // All the simulation is in this function
 						beval = bmu->Eval();
 						ceval = cmu->Eval();
 						Aij(z) = (beval*
-							(1 / (Jk *Jk)*(((yk(2) - yk(0))*zd(j) + (yk(0) - yk(1))*nd(j))*((yk(2) - yk(0))*zd(i) + (yk(0) - yk(1))*nd(i)) +
-							((xk(0) - xk(2))*zd(j) + (xk(1) - xk(0))*nd(j))*((xk(0) - xk(2))*zd(i) + (xk(1) - xk(0))*nd(i)))) +
+							(1 / (Jk *Jk)*(((yk(2) - yk(0))*zd(j) + (yk(0) - yk(1))*nd(j))*((yk(2) - yk(0))*zd(i) + (yk(0) - yk(1))*nd(i))))) +
 							ceval*psi(i)*psi(j) +
-							1 / Jk*(psi(i))*(ax*((yk(2) - yk(0))*zd(j) + (yk(0) - yk(1))*nd(j)) + ay*((xk(0) - xk(2))*zd(j) + (xk(1) - xk(0))*nd(j))))*Jk;
+							1 / Jk*(psi(i))*(ax*((yk(2) - yk(0))*zd(j) + (yk(0) - yk(1))*nd(j)) + ay*((xk(0) - xk(2))*zd(j) + (xk(1) - xk(0))*nd(j)))*Jk;
 			
 
 					}
@@ -988,7 +989,7 @@ void simul::eval() // All the simulation is in this function
 
 				{
 					arma::rowvec tov1(6);
-					tov1 << 1 << chi << eta << chi*eta << chi*chi << eta*eta << arma::endr;
+					tov1 = {1, chi, eta, chi*eta, chi*chi, eta*eta};
 					psi1 = arma::sum(coeq.row(0) % tov1);
 					psi2 = arma::sum(coeq.row(1) % tov1);
 					psi3 = arma::sum(coeq.row(2) % tov1);
@@ -1072,7 +1073,7 @@ void simul::eval() // All the simulation is in this function
 		// we could have also created a QCPColorGradient instance and added own colors to
 	
 		// rescale the data dimension (color) such that all data points lie in the span visualized by the color gradient:
-		QCPRange inter = QCPRange::QCPRange(arma::min(ue), arma::max(ue));
+		QCPRange inter = QCPRange(arma::min(ue), arma::max(ue));
 		colorMap->setDataRange(inter);
 		colorMap->setInterpolate(1);
 
