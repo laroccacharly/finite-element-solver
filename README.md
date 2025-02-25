@@ -2,6 +2,8 @@
 
 A C++ on Qt app to solve partial differential equations in 2D. 
 
+Refer to the doc.pdf file for more information about the application. 
+
 # Install dependencies
 
 ```bash
@@ -14,7 +16,6 @@ Run the build.sh script to build and run the app.
 ./build.sh
 ```
 
-An example output plot of a solution : 
-![Screenshot](plot.png)
+The UI of the application: 
+![Screenshot](finite_element_solver_ui.png)
 
-Refer to the doc.pdf file for more detailed information about the application. 
