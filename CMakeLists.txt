@@ -27,8 +27,8 @@ find_library(MUPARSER_LIBRARY muparser)
 find_path(MUPARSER_INCLUDE_DIR muParser.h)
 
 # Define that we want to use SuperLU with Armadillo
-add_definitions(-DARMA_USE_SUPERLU)
-add_definitions(-DARMA_SUPERLU_INCLUDE_DIR=${SUPERLU_INCLUDE_DIR})
+add_compile_definitions(ARMA_USE_SUPERLU)
+add_compile_definitions(ARMA_SUPERLU_INCLUDE_DIR=${SUPERLU_INCLUDE_DIR})
 
 # Include directories
 include_directories(
